@@ -1,0 +1,223 @@
+@import "tailwindcss";
+
+/*
+ * ============================================
+ * THEME SYSTEM — Creator Content Engine
+ * ============================================
+ * Dark mode = default (:root)
+ * Light mode = html.light override
+ *
+ * RULE: Never use hardcoded hex values in components.
+ * Always reference CSS variables via Tailwind utilities
+ * (e.g., bg-background, text-foreground, text-accent).
+ * ============================================
+ */
+
+@theme inline {
+  /* Colors mapped to CSS variables */
+  --color-background: var(--bg);
+  --color-background-card: var(--bg-card);
+  --color-background-hover: var(--bg-hover);
+
+  --color-foreground: var(--tx);
+  --color-foreground-sub: var(--tx-sub);
+  --color-foreground-ghost: var(--tx-ghost);
+
+  --color-accent: var(--ac);
+  --color-accent-hover: var(--ac-hover);
+  --color-accent-subtle: var(--ac-subtle);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+
+  --color-border: var(--border);
+  --color-divider: var(--divider);
+
+  --color-glass: var(--bg-glass);
+  --color-glass-border: var(--border-glass);
+
+  /* Border radius */
+  --radius-r: var(--r);
+  --radius-r2: var(--r2);
+  --radius-r-sm: var(--r-sm);
+  --radius-r-full: var(--r-full);
+
+  /* Shadows */
+  --shadow-sm: var(--sh-sm);
+  --shadow-md: var(--sh-md);
+  --shadow-lg: var(--sh-lg);
+
+  /* Font family */
+  --font-sans: var(--font-dm-sans), system-ui, -apple-system, sans-serif;
+
+  /* Spacing */
+  --spacing-gutter: var(--gutter);
+}
+
+/* ---------- DARK THEME (default) ---------- */
+:root {
+  /* Core surfaces */
+  --bg:        #0a0b0f;
+  --bg-card:   #12131a;
+  --bg-hover:  #1a1b24;
+
+  /* Text */
+  --tx:        #e8e6e1;
+  --tx-sub:    #9a978f;
+  --tx-ghost:  #5a5750;
+
+  /* Accent */
+  --ac:        #6c63ff;
+  --ac-hover:  #7b73ff;
+  --ac-subtle: rgba(108, 99, 255, 0.12);
+
+  /* Semantic */
+  --success:   #34d399;
+  --warning:   #fbbf24;
+  --error:     #f87171;
+  --info:      #60a5fa;
+
+  /* Glass */
+  --bg-glass:      rgba(255, 255, 255, 0.02);
+  --border-glass:  rgba(255, 255, 255, 0.06);
+
+  /* Borders & Dividers */
+  --border:    #1e1f29;
+  --divider:   #16171f;
+
+  /* Shadows (prefixed to avoid @theme conflict) */
+  --sh-sm:  0 1px 2px rgba(0, 0, 0, 0.3);
+  --sh-md:  0 4px 12px rgba(0, 0, 0, 0.4);
+  --sh-lg:  0 8px 24px rgba(0, 0, 0, 0.5);
+
+  /* Radii */
+  --r:      12px;
+  --r2:     16px;
+  --r-sm:   8px;
+  --r-full: 9999px;
+
+  /* Spacing */
+  --gutter: 24px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+}
+
+/* ---------- LIGHT THEME ---------- */
+html.light {
+  /* Core surfaces */
+  --bg:        #f5f5f0;
+  --bg-card:   #ffffff;
+  --bg-hover:  #eaeae5;
+
+  /* Text */
+  --tx:        #1a1a1a;
+  --tx-sub:    #6b6b6b;
+  --tx-ghost:  #a3a3a3;
+
+  /* Accent */
+  --ac:        #5a52e0;
+  --ac-hover:  #4940c9;
+  --ac-subtle: rgba(90, 82, 224, 0.10);
+
+  /* Semantic */
+  --success:   #16a34a;
+  --warning:   #ca8a04;
+  --error:     #dc2626;
+  --info:      #2563eb;
+
+  /* Glass */
+  --bg-glass:      rgba(0, 0, 0, 0.03);
+  --border-glass:  rgba(0, 0, 0, 0.08);
+
+  /* Borders & Dividers */
+  --border:    #d4d4cf;
+  --divider:   #e5e5e0;
+
+  /* Shadows */
+  --sh-sm:  0 1px 2px rgba(0, 0, 0, 0.06);
+  --sh-md:  0 4px 12px rgba(0, 0, 0, 0.08);
+  --sh-lg:  0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------- GLOBAL BASE STYLES ---------- */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    background-color: var(--bg);
+    color: var(--tx);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--bg);
+    color: var(--tx);
+    line-height: 1.6;
+  }
+
+  a {
+    color: var(--ac);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--ac-hover);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ac);
+    outline-offset: 2px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--tx-ghost);
+    border-radius: var(--r-full);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--tx-sub);
+  }
+}
+
+@utility theme-transition {
+  transition: background-color var(--transition-base),
+              color var(--transition-base),
+              border-color var(--transition-base),
+              box-shadow var(--transition-base);
+}
+
+@utility animate-slide-up {
+  animation: slide-up 350ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
