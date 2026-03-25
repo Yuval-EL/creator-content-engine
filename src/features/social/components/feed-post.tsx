@@ -4,47 +4,31 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Heart,
-  GitFork,
-  Package,
-  Trophy,
-  Flame,
-  Handshake,
   MessageCircle,
   Share2,
   Bookmark,
+  Handshake,
+  Play,
+  Package,
 } from "lucide-react";
-import type { FeedEvent } from "../types";
+import type { FeedPost } from "../types";
 import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
 
-interface FeedEventCardProps {
-  event: FeedEvent;
+interface FeedPostCardProps {
+  post: FeedPost;
   index: number;
 }
-
-const TYPE_META: Record<
-  FeedEvent["type"],
-  { icon: typeof Heart; accent: string; bg: string; label: string }
-> = {
-  vouch: { icon: Heart, accent: "text-accent", bg: "bg-accent-subtle", label: "Vouched" },
-  remix: { icon: GitFork, accent: "text-success", bg: "bg-success/10", label: "Remixed" },
-  publish: { icon: Package, accent: "text-info", bg: "bg-info/10", label: "Published" },
-  trophy: { icon: Trophy, accent: "text-warning", bg: "bg-warning/10", label: "Achievement" },
-  milestone: { icon: Flame, accent: "text-error", bg: "bg-error/10", label: "Milestone" },
-  colab: { icon: Handshake, accent: "text-accent", bg: "bg-accent-subtle", label: "Colab" },
-};
 
 function fmt(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
   return String(n);
 }
 
-export function FeedEventCard({ event, index }: FeedEventCardProps) {
-  const meta = TYPE_META[event.type];
-  const Icon = meta.icon;
-  const [liked, setLiked] = useState(event.liked ?? false);
-  const [likeCount, setLikeCount] = useState(event.likes);
-  const [bookmarked, setBookmarked] = useState(event.bookmarked ?? false);
+export function FeedPostCard({ post, index }: FeedPostCardProps) {
+  const [liked, setLiked] = useState(post.liked ?? false);
+  const [likeCount, setLikeCount] = useState(post.likes);
+  const [bookmarked, setBookmarked] = useState(post.bookmarked ?? false);
 
   return (
     <motion.article
@@ -57,82 +41,81 @@ export function FeedEventCard({ event, index }: FeedEventCardProps) {
         ease: [0.16, 1, 0.3, 1],
       }}
     >
-      {/* Type indicator row */}
-      <div className="mb-3 flex items-center gap-2 pl-14">
-        <Icon size={13} className={meta.accent} />
-        <span className={`text-xs font-medium ${meta.accent}`}>
-          {meta.label}
-        </span>
-      </div>
-
       {/* Main content row */}
       <div className="flex gap-3">
-        {/* Actor avatar */}
-        <Link href={`/creator/${event.actor.handle}`} className="shrink-0">
+        {/* Author avatar */}
+        <Link href={`/creator/${post.author.handle}`} className="shrink-0">
           <Avatar
-            src={event.actor.avatarUrl}
-            alt={event.actor.name}
+            src={post.author.avatarUrl}
+            alt={post.author.name}
             size="md"
-            score={event.actor.authorityScore}
+            score={post.author.authorityScore}
           />
         </Link>
 
         <div className="min-w-0 flex-1">
-          {/* Actor name + time */}
+          {/* Author name + time */}
           <div className="flex items-baseline gap-2">
             <Link
-              href={`/creator/${event.actor.handle}`}
+              href={`/creator/${post.author.handle}`}
               className="text-sm font-semibold text-foreground hover:underline"
             >
-              {event.actor.name}
+              {post.author.name}
             </Link>
-            {event.target && (
-              <>
-                <span className="text-xs text-foreground-ghost">to</span>
-                <Link
-                  href={`/creator/${event.target.handle}`}
-                  className="text-sm font-semibold text-foreground hover:underline"
-                >
-                  {event.target.name}
-                </Link>
-              </>
-            )}
             <span className="text-xs text-foreground-ghost">
-              · {event.timeAgo}
+              · {post.timeAgo}
             </span>
           </div>
 
-          {/* Content */}
-          <p className="mt-1 text-sm leading-relaxed text-foreground">
-            {event.content}
+          {/* Text content */}
+          <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-foreground">
+            {post.content}
           </p>
 
-          {/* Detail / quote */}
-          {event.detail && (
-            <div className="mt-3 rounded-r border border-border bg-background-card p-3">
-              <p className="text-sm leading-relaxed text-foreground-sub italic">
-                &ldquo;{event.detail}&rdquo;
-              </p>
+          {/* Video thumbnail */}
+          {post.video && (
+            <div className="group mt-3 overflow-hidden rounded-r2 border border-border">
+              <div
+                className="relative flex h-48 items-center justify-center sm:h-64"
+                style={{ background: post.video.thumbnailGradient }}
+              >
+                {/* Play overlay */}
+                <div className="absolute inset-0 bg-black/20 transition-colors group-hover:bg-black/10" />
+                <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-transform group-hover:scale-110">
+                  <Play size={24} className="ml-1 text-white" fill="white" />
+                </div>
+                {/* Duration badge */}
+                <span className="absolute bottom-3 right-3 rounded-r-sm bg-black/70 px-2 py-0.5 text-[11px] font-medium text-white">
+                  {post.video.duration}
+                </span>
+              </div>
+              <div className="bg-background-card px-4 py-3">
+                <p className="text-sm font-medium text-foreground">
+                  {post.video.title}
+                </p>
+              </div>
             </div>
           )}
 
-          {/* Metrics badge */}
-          {event.metrics && (
-            <div className="mt-3 inline-flex items-center gap-3 rounded-r border border-border bg-background-card px-4 py-2">
-              <span className="text-xs font-medium uppercase tracking-widest text-foreground-ghost">
-                {event.metrics.label}
-              </span>
-              <span className="text-base font-bold text-foreground">
-                {event.metrics.value}
-              </span>
+          {/* Tags */}
+          {post.tags && post.tags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {post.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-r-full bg-background-card px-2.5 py-0.5 text-[10px] font-medium text-foreground-ghost"
+                >
+                  #{tag.replace(/\s+/g, "")}
+                </span>
+              ))}
             </div>
           )}
 
           {/* Related playbook */}
-          {event.relatedPlaybook && (
+          {post.relatedPlaybook && (
             <div className="mt-2 flex items-center gap-1.5 text-xs text-foreground-ghost">
               <Package size={12} />
-              <span>{event.relatedPlaybook}</span>
+              <span>{post.relatedPlaybook}</span>
             </div>
           )}
 
@@ -160,7 +143,7 @@ export function FeedEventCard({ event, index }: FeedEventCardProps) {
             {/* Comments */}
             <button className="group flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs text-foreground-ghost transition-colors hover:bg-info/10 hover:text-info">
               <MessageCircle size={15} />
-              <span>{fmt(event.comments)}</span>
+              <span>{fmt(post.comments)}</span>
             </button>
 
             {/* Colab */}
@@ -174,7 +157,7 @@ export function FeedEventCard({ event, index }: FeedEventCardProps) {
             {/* Share */}
             <button className="group flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs text-foreground-ghost transition-colors hover:bg-success/10 hover:text-success">
               <Share2 size={15} />
-              <span>{fmt(event.shares)}</span>
+              <span>{fmt(post.shares)}</span>
             </button>
 
             {/* Bookmark */}

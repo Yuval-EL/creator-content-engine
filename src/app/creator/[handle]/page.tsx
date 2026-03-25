@@ -1,15 +1,21 @@
 import { notFound } from "next/navigation";
-import { HeroHeader, CreationStreak, TechStack } from "@/features/identity";
-import { StrategyCard, ProjectBox } from "@/features/playbooks";
+import { ProfileHeader, ProfileTabs, CreationStreak, TechStack } from "@/features/identity";
+import { StrategyCard } from "@/features/playbooks";
 import {
   CredRing,
   MasterStack,
   DirectorNotes,
   CredLedger,
   VouchButton,
-  HubHeader,
+  WhoToFollow,
+  TrendingPlaybooks,
+  CreatorSidebar,
+  ColabMatches,
   getUserByHandle,
   getAllUsers,
+  getAllPlaybooks,
+  platformStats,
+  colabProposals,
 } from "@/features/social";
 
 export function generateStaticParams() {
@@ -28,7 +34,9 @@ export default async function CreatorProfilePage({
   if (!user) notFound();
 
   const allUsers = getAllUsers();
-  const featured = user.playbooks[0];
+  const currentUser = allUsers[0]; // Lena as logged-in user
+  const allPlaybooks = getAllPlaybooks();
+  const activeColabs = colabProposals.filter((c) => c.status === "active");
   const vouchGate = {
     canVouch: false,
     currentScore: 35,
@@ -36,76 +44,88 @@ export default async function CreatorProfilePage({
     hasVouched: false,
   };
 
+  const tabs = [
+    { id: "playbooks", label: "Playbooks", count: user.playbooks.length },
+    { id: "activity", label: "Activity" },
+    { id: "about", label: "About" },
+  ];
+
   return (
-    <main className="min-h-screen bg-background">
-      <div className="mx-auto max-w-6xl px-gutter py-8 md:py-12">
-        <HubHeader users={allUsers} currentHandle={handle} />
+    <div className="flex">
+      {/* Main profile column */}
+      <div className="min-w-0 flex-1 border-x border-border">
+        <ProfileHeader creator={user.profile} currentUser={currentUser.profile} />
 
-        {/* ═══ IDENTITY ═══ */}
-        <HeroHeader creator={user.profile} />
+        <ProfileTabs tabs={tabs}>
+          {{
+            /* ═══ PLAYBOOKS TAB ═══ */
+            playbooks: (
+              <div className="p-4 sm:p-6">
+                {user.playbooks.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {user.playbooks.map((pb, i) => (
+                      <StrategyCard key={pb.id} playbook={pb} index={i} />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="py-12 text-center text-sm text-foreground-ghost">
+                    No playbooks published yet.
+                  </p>
+                )}
 
-        {/* ═══ CREDIBILITY ═══ */}
-        <section className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-5">
-          <div className="flex flex-col items-center gap-6 lg:col-span-2">
-            <CredRing breakdown={user.cred} />
-            <VouchButton gate={vouchGate} targetName={user.profile.name} />
-          </div>
-          <div className="lg:col-span-3">
-            <MasterStack expertise={user.expertise} />
-          </div>
-        </section>
-
-        {/* ═══ ACTIVITY + LEDGER ═══ */}
-        <section className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-3">
-          <div className="flex flex-col gap-8 lg:col-span-2">
-            <CreationStreak data={user.profile.streakData} />
-            <TechStack items={user.profile.techStack} />
-          </div>
-          <div>
-            <CredLedger transactions={user.transactions} />
-          </div>
-        </section>
-
-        {/* ═══ PLAYBOOKS ═══ */}
-        {user.playbooks.length > 0 && (
-          <section className="mt-20">
-            <div className="mb-8 flex items-baseline justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-widest text-foreground-ghost">
-                Published Playbooks
-              </h2>
-              <span className="text-sm text-foreground-sub">
-                <span className="font-semibold text-foreground">
-                  {user.playbooks.length}
-                </span>{" "}
-                playbook{user.playbooks.length > 1 ? "s" : ""}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {user.playbooks.map((pb, i) => (
-                <StrategyCard key={pb.id} playbook={pb} index={i} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ═══ FEATURED PROJECT BOX ═══ */}
-        {featured && (
-          <section className="mt-20">
-            <div className="mb-8">
-              <h2 className="text-xs font-semibold uppercase tracking-widest text-foreground-ghost">
-                Featured Playbook
-              </h2>
-            </div>
-            <ProjectBox playbook={featured} />
-            {user.directorNotes.length > 0 && (
-              <div className="mt-8">
-                <DirectorNotes notes={user.directorNotes} />
+                {/* Director's Notes on featured playbook */}
+                {user.directorNotes.length > 0 && (
+                  <div className="mt-8">
+                    <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-foreground-ghost">
+                      Community Notes
+                    </h3>
+                    <DirectorNotes notes={user.directorNotes} />
+                  </div>
+                )}
               </div>
-            )}
-          </section>
-        )}
+            ),
+
+            /* ═══ ACTIVITY TAB ═══ */
+            activity: (
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-col gap-6">
+                  <CreationStreak data={user.profile.streakData} />
+                  <CredLedger transactions={user.transactions} />
+                </div>
+              </div>
+            ),
+
+            /* ═══ ABOUT TAB ═══ */
+            about: (
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-col gap-8">
+                  {/* Cred Breakdown */}
+                  <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
+                    <CredRing breakdown={user.cred} />
+                    <VouchButton gate={vouchGate} targetName={user.profile.name} />
+                  </div>
+
+                  {/* Expertise */}
+                  <MasterStack expertise={user.expertise} />
+
+                  {/* Tech Stack */}
+                  <TechStack items={user.profile.techStack} />
+                </div>
+              </div>
+            ),
+          }}
+        </ProfileTabs>
       </div>
-    </main>
+
+      {/* Right sidebar */}
+      <aside className="sticky top-0 hidden h-screen w-[320px] shrink-0 overflow-y-auto px-4 py-4 lg:block">
+        <div className="flex flex-col gap-4">
+          <ColabMatches users={allUsers} currentUser={currentUser} activeColabs={activeColabs} />
+          <WhoToFollow users={allUsers} />
+          <TrendingPlaybooks playbooks={allPlaybooks} />
+          <CreatorSidebar stats={platformStats} />
+        </div>
+      </aside>
+    </div>
   );
 }

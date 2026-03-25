@@ -36,6 +36,12 @@ export const mockCreator: CreatorProfile = {
   niche: "Cinematic Editor & Visual Storyteller",
   bio: "Turning raw footage into feeling. 8 years cutting docs, brand films, and music videos. My playbooks have been remixed 2,400+ times.",
   authorityScore: 87,
+  avatarUrl: "https://api.dicebear.com/9.x/notionists/svg?seed=MarcusChen&backgroundColor=b6e3f4",
+  coverGradient: "linear-gradient(135deg, #0c0c1d 0%, #312e81 50%, #1e1b4b 100%)",
+  followers: 8200,
+  following: 189,
+  openToColab: true,
+  colabInterests: ["Color science for narrative projects", "Sound-driven editing experiments", "AI grading pipelines"],
   badges: [
     {
       id: "b1",

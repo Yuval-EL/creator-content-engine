@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { AppShell } from "@/components/ui/app-shell";
+import { getAllUsers } from "@/features/social";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -10,8 +11,8 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Creator Content Engine",
-  description: "AI-powered content intelligence for creators",
+  title: "The Hub — Creator Reputation Layer",
+  description: "Where creative know-how becomes verified currency",
 };
 
 const themeScript = `(function(){try{if(localStorage.getItem("theme")==="light")document.documentElement.classList.add("light")}catch(e){}})()`;
@@ -21,16 +22,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const users = getAllUsers();
+
   return (
     <html lang="en" className={`${dmSans.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="min-h-full flex flex-col font-sans">
-        <div className="fixed right-4 top-4 z-50">
-          <ThemeToggle />
-        </div>
-        {children}
+      <body className="min-h-full flex flex-col font-sans bg-background text-foreground">
+        <AppShell users={users}>{children}</AppShell>
       </body>
     </html>
   );

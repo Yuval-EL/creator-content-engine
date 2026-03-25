@@ -5,10 +5,16 @@ export interface CreatorProfile {
   niche: string;
   bio: string;
   authorityScore: number;
+  avatarUrl: string;
+  coverGradient: string;
   badges: Badge[];
   techStack: TechItem[];
   streakData: StreakDay[];
   vouches: Vouch[];
+  followers: number;
+  following: number;
+  openToColab: boolean;
+  colabInterests?: string[];
 }
 
 export interface Badge {

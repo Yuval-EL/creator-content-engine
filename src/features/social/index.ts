@@ -5,8 +5,11 @@ export { CredLedger } from "./components/cred-ledger";
 export { VouchButton } from "./components/vouch-button";
 export { SocialFeed } from "./components/social-feed";
 export { FeedEventCard } from "./components/feed-event";
+export { ComposeBox } from "./components/compose-box";
 export { CreatorSidebar } from "./components/creator-sidebar";
 export { HubHeader } from "./components/hub-header";
+export { WhoToFollow } from "./components/who-to-follow";
+export { TrendingPlaybooks } from "./components/trending-playbooks";
 export {
   hubUsers,
   getUserByHandle,
@@ -22,6 +25,13 @@ export {
   mockCredTransactions,
   mockVouchGate,
 } from "./data/mock-social";
+export { ColabPitchModal } from "./components/colab-pitch-modal";
+export { ColabMatches } from "./components/colab-matches";
+export { FeedPostCard } from "./components/feed-post";
+export {
+  colabProposals,
+  feedPosts,
+} from "./data/mock-hub";
 export type {
   CredBreakdown,
   NicheExpertise,
@@ -29,5 +39,7 @@ export type {
   CredTransaction,
   VouchGateState,
   FeedEvent,
+  FeedPost,
+  ColabProposal,
   HubUser,
 } from "./types";
