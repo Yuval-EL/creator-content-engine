@@ -37,7 +37,7 @@ import {
    CONSTANTS
    ═══════════════════════════════════════════════════ */
 
-const STORAGE_KEY = "hub_tutorial_v3";
+const STORAGE_KEY = "hub_tutorial_v4";
 
 interface Step {
   id: string;
